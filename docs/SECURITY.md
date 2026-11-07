@@ -1,28 +1,20 @@
-# Security practices
+# Security Model
 
-How this repository keeps the package and its users safe. The disclosure policy is in
-[../SECURITY.md](../SECURITY.md).
+## Threat Model & Defenses
 
-## Secrets
+### Cross-Site Scripting (XSS)
 
-- No secrets, tokens or credentials in the repository, commit history, logs or prompts.
-- `gitleaks` runs as the last step of `npm run check` and as a dedicated CI job. Its configuration is
-  `.gitleaks.toml`.
-- Publishing credentials live only in the CI secret store or the maintainer's local npm configuration.
+- **Defended**: All rendered text nodes and HTML attributes pass through `escapeHtml`, encoding `&`, `<`, `>`, `"`, and `'` as their respective entities.
 
-## Dependencies
+### Malicious URL Injection
 
-- Runtime dependencies are avoided; development dependencies are limited to the toolchain listed in
-  [STACK.md](STACK.md).
-- Dependabot opens weekly updates for npm packages and GitHub Actions.
-- Commit the generated `package-lock.json` so installs are reproducible.
+- **Defended**: `isSafeUrl` follows WHATWG URL parsing by stripping C0 controls, spaces, tabs, and newlines. Only `http:`, `https:`, `mailto:`, and single-slash root-relative paths (`/`) are accepted. `javascript:`, `data:`, and `//` are rejected.
 
-## Code
+### Denial of Service
 
-- No `eval`, dynamic `Function` construction or shelling out from library code.
-- Inputs from callers are validated and rejected with explicit errors.
+- **Defended**: Hard limits on inputs prevent resource exhaustion:
+  - `highlight`: `maxChars` (default 100,000), `maxMarks` (default 50), query (10,000).
+  - `facetCounts`, `renderResults`: items (100,000), fields (1,000).
+  - Violations throw `SearchKitError` with `TOO_LARGE` code.
 
-## Publishing
-
-- Packages are published from a clean checkout after `npm run check` passes.
-- Only `dist/` is included in the published tarball.
+- **Not Defended**: The library does not perform regex optimization for extremely pathological user-provided regular expression strings in search, though search terms are split by whitespace, not used directly in a regex engine.

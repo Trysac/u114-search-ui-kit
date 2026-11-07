@@ -1,33 +1,32 @@
-# Project record: search-ui-kit
+# Project Record
 
 ## Objective
 
-Headless search UI kit: diacritic-insensitive highlighting, facet counts and filters, a search state reducer and escaped, accessible HTML renderers with safe links
-
-State the measurable outcome this utility must deliver and who it is for.
+Provide an enterprise-grade, headless search UI library with Unicode-correct diacritic-insensitive highlighting, facet calculations, search reducer, and XSS-safe HTML renderers.
 
 ## Scope
 
-In scope:
+- Highlighting logic with Unicode-safe index mapping.
+- Facet counting and filtering (OR within field, AND across fields).
+- State management via pure reducers.
+- HTML string generation for results and facet controls.
+- URL sanitization.
 
-- The public API documented in the README.
+## Out of Scope
 
-Out of scope:
+- Integration with frameworks (React, Vue, etc.).
+- Network search clients.
+- Keyboard-driven combobox widgets.
+- CSS styling (class names only are provided).
 
-- List what this utility deliberately does not do.
+## Factory run u114 (measured from API usage)
 
-## Timeline
+| Phase | Model | Batch | Input | Output | Cache write | Cache read | Cost (USD) |
+|---|---|---|---|---|---|---|---|
+| generation | gemini-3.8-flash | yes | 4533 | 54303 | 0 | 0 | 0.1035 |
+| fix-1 | gemini-3.8-flash | no | 80022 | 1865 | 0 | 448928 | 0.1007 |
+| audit | gemini-3.1-flash-lite | no | 47747 | 322 | 0 | 91639 | 0.0147 |
+| fix-2 | gemini-3.8-flash | no | 29094 | 423 | 0 | 27907 | 0.0255 |
+| docs | gemini-3.1-flash-lite | no | 15553 | 1470 | 0 | 0 | 0.0061 |
 
-| Date | Milestone |
-|---|---|
-| 2026 | Repository created from the factory utility template. |
-
-## Effort metrics
-
-Measured values only. Leave "pending measurement" until a real figure is recorded; never estimate here.
-
-| Metric | Value | Source |
-|---|---|---|
-| Tokens (input / output) | pending measurement | factory ledger |
-| Hours (human) | pending measurement | time log |
-| Cost (USD) | pending measurement | factory ledger |
+Total: $0.2505. Prices: Anthropic list prices.

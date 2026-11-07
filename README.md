@@ -1,55 +1,51 @@
-# search-ui-kit
+# @trysac/search-ui-kit
 
-[![npm version](https://img.shields.io/npm/v/@trysac/search-ui-kit.svg)](https://www.npmjs.com/package/@trysac/search-ui-kit)
-[![license: MIT](https://img.shields.io/npm/l/@trysac/search-ui-kit.svg)](LICENSE)
-[![CI](https://github.com/Trysac/u114-search-ui-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u114-search-ui-kit/actions/workflows/ci.yml)
+Headless search UI kit: diacritic-insensitive highlighting, facet counts and filters, a search state reducer, and escaped, accessible HTML renderers with safe links.
 
-Headless search UI kit: diacritic-insensitive highlighting, facet counts and filters, a search state reducer and escaped, accessible HTML renderers with safe links
+## The Problem
 
-## Problem
+Search front ends frequently re-implement highlighting, facet counting, and result rendering logic, often introducing bugs such as broken surrogate pairs or accents during highlighting, unsafe HTML injection, or insecure URL handling (e.g., `javascript:` links). This library provides a framework-agnostic, zero-dependency core that handles these logic and rendering concerns independently of any specific UI framework or DOM requirement.
 
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and why existing
-packages do not solve it well. Keep it factual; link to an issue or decision record when there is one.
+## Installation
 
-## Install
-
-```sh
+```bash
 npm install @trysac/search-ui-kit
 ```
-
-Requires Node.js 20 or newer. The package ships ES modules with TypeScript declarations.
 
 ## Usage
 
 ```ts
-import { greet } from "@trysac/search-ui-kit";
+import { highlight, searchReducer, renderResults } from "@trysac/search-ui-kit";
 
-// Build a greeting; surrounding whitespace is ignored.
-const message = greet("  Ada ");
-console.log(message); // "Hello, Ada!"
-
-try {
-  greet("   ");
-} catch (error) {
-  console.error((error as Error).message); // "name must not be empty"
-}
+const state = { query: "cafe", facets: {}, page: 1 };
+const items = [{ id: "1", title: "Caf&eacute; cr&egrave;me", url: "https://example.com/cafe" }];
+const html = renderResults(state, items);
+console.log(html);
 ```
 
-## API
+## Public API Summary
 
-| Export | Signature | Description |
-|---|---|---|
-| `greet` | `(name: string) => string` | Placeholder API; replace it with the real one. |
+- `highlight(text: string, query: string, opts?: HighlightOptions): Segment[]`: Diacritic-insensitive highlighting that maps segments to the original text. `opts` include `maxMarks` (default 50) and `maxChars` (default 100,000).
+- `facetCounts(items: Item[], fields: string[], opts?: FacetCountOptions): Record<string, FacetCountEntry[]>`: Computes sorted facet values per field. `opts` include `maxValues` (default 1,000).
+- `applyFacets(items: Item[], selected: Record<string, string[]>): Item[]`: Filters items using OR within fields and AND across fields.
+- `searchReducer(state: SearchState, action: Action): SearchState`: Pure state management for search.
+- `renderResults(state: { query: string }, items: Item[]): string`: Generates accessible HTML for search results.
+- `renderFacets(counts: Record<string, FacetCountEntry[]>, selected: Record<string, string[]>): string`: Generates fieldset markup for facets.
+- `escapeHtml(str: string): string`: Escapes HTML entities.
+- `isSafeUrl(url: string | undefined): boolean`: Validates URL schemes.
 
-## Development
+### Limits and Errors
 
-```sh
-npm install
-npm run check   # lint, format, types, tests with coverage, docs, secrets
-```
+Public functions throw `SearchKitError` (with code `TOO_LARGE` or `INVALID_INPUT`) when limits are exceeded, such as items > 100,000 or text length > 100,000.
 
-See [AGENTS.md](AGENTS.md) for the full command list and [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
+## Why not InstantSearch?
+
+Unlike InstantSearch, this library has no backend coupling or framework dependencies. It provides a tiny, tested core that outputs exact, escaped markup, allowing full control over the UI layer.
+
+## Security
+
+See [docs/SECURITY.md](docs/SECURITY.md) for the threat model and sanitization guarantees.
 
 ## License
 
-[MIT](LICENSE) © 2026 Miguel Gomez
+MIT
