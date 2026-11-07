@@ -9,4 +9,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Add headless search UI kit with diacritic-insensitive highlighting, facet counts, state reducer, and accessible HTML renderers.
 - Initial project structure from the factory utility template.
