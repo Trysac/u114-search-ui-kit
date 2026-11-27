@@ -8,9 +8,15 @@ Search front ends frequently re-implement highlighting, facet counting, and resu
 
 ## Installation
 
-```bash
-npm install @trysac/search-ui-kit
+Not published to npm yet. Build it from a clone, then install it from the local path:
+
+```sh
+git clone https://github.com/Trysac/u114-search-ui-kit.git
+cd u114-search-ui-kit && npm ci && npm run build
+cd ../your-project && npm install ../u114-search-ui-kit
 ```
+
+Imports keep the package name: `import { ... } from "@trysac/search-ui-kit"`.
 
 ## Usage
 
